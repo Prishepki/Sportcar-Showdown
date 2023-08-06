@@ -30,6 +30,66 @@ namespace MonoWaves.QoL
                 Mathf.Round(target.z / roundTo) * roundTo
             );
         }
+
+        public static Vector3 Clamp(this Vector3 target, Vector3 min, Vector3 max)
+        {
+            return new Vector3
+            (
+                Mathf.Clamp(target.x, min.x, max.x),
+                Mathf.Clamp(target.y, min.y, max.y),
+                Mathf.Clamp(target.z, min.z, max.z)
+            );
+        }
+
+        public static Vector3 Abs(this Vector3 target)
+        {
+            return new Vector3
+            (
+                Mathf.Abs(target.x),
+                Mathf.Abs(target.y),
+                Mathf.Abs(target.z)
+            );
+        }
+
+        public static Vector3 Multiply(this Vector3 target, Vector3 multiplier)
+        {
+            return new Vector3
+            (
+                target.x * multiplier.x,
+                target.y * multiplier.y,
+                target.z * multiplier.z
+            );
+        }
+
+        public static Vector3 Multiply(this Vector3 target, float x, float y, float z)
+        {
+            return new Vector3
+            (
+                target.x * x,
+                target.y * y,
+                target.z * z
+            );
+        }
+
+        public static Vector3 Divide(this Vector3 target, Vector3 divider)
+        {
+            return new Vector3
+            (
+                target.x / divider.x,
+                target.y / divider.y,
+                target.z / divider.z
+            );
+        }
+
+        public static Vector3 Divide(this Vector3 target, float x, float y, float z)
+        {
+            return new Vector3
+            (
+                target.x / x,
+                target.y / y,
+                target.z / z
+            );
+        }
     }
 
     public static class MathExtensions
