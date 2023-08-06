@@ -64,8 +64,8 @@ public class VehicleController : MonoBehaviour
 
     private void Update()
     {
-        _inputSteering = Input.GetAxisRaw(MonoWaves.QoL.Const.HORIZONTAL);
-        _inputThrottle = Input.GetAxisRaw(MonoWaves.QoL.Const.VERTICAL);
+        _inputSteering = Input.GetAxisRaw(Const.HORIZONTAL);
+        _inputThrottle = Input.GetAxisRaw(Const.VERTICAL);
 
         if (Keyboard.IsPressed(KeyCode.R))
         {
