@@ -8,7 +8,7 @@ namespace MonoWaves.QoL
         {
             return new Vector2(Mathf.Cos(radian), Mathf.Sin(radian));
         }
-        
+
         public static Vector2 DegreeToVector2(float degree)
         {
             return RadianToVector2(degree * Mathf.Deg2Rad);
@@ -19,6 +19,16 @@ namespace MonoWaves.QoL
             Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 direction = mousePosition - position;
             return Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        }
+
+        public static Vector3 Round(this Vector3 target, float roundTo = 1f)
+        {
+            return new Vector3
+            (
+                Mathf.Round(target.x / roundTo) * roundTo,
+                Mathf.Round(target.y / roundTo) * roundTo,
+                Mathf.Round(target.z / roundTo) * roundTo
+            );
         }
     }
 
