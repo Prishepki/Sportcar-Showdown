@@ -26,6 +26,20 @@ public class WheelSettings
     }
 }
 
+public struct WheelInitializer
+{
+    public WheelSettings Settings;
+    public bool IsSteering;
+    public bool IsDriving;
+
+    public WheelInitializer(WheelSettings settings, bool isSteering, bool isDriving)
+    {
+        Settings = settings;
+        IsSteering = isSteering;
+        IsDriving = isDriving;
+    }
+}
+
 public class WheelController : MonoBehaviour
 {
     public WheelSettings Settings;
@@ -51,12 +65,24 @@ public class WheelController : MonoBehaviour
 
     private Vector3 _force;
 
-    public void Setup(Rigidbody rb, GameObject model)
+    public void Setup(Rigidbody rb, GameObject model, WheelSide side)
     {
         _rb = rb;
 
-        _model = Instantiate(model).transform;
-        _model.SetParent(transform);
+        _model = Instantiate(model, transform).transform;
+        _model.localScale = new Vector3
+        (
+            x: side == WheelSide.Left ? -1 : 1,
+            y: 1,
+            z: 1
+        );
+    }
+
+    public void Initialize(WheelInitializer initializer)
+    {
+        Settings = initializer.Settings.Clone();
+        Settings.isDriving = initializer.IsDriving;
+        Settings.isSteering = initializer.IsSteering;
     }
 
     public void Step(float torque)
@@ -163,4 +189,10 @@ public class WheelController : MonoBehaviour
         _model.localPosition = new(0, -_springLength, 0);
         _model.Rotate(angularVelocity * Mathf.Rad2Deg * Time.fixedDeltaTime, 0, 0);
     }
+}
+
+public enum WheelSide
+{
+    Left,
+    Right
 }

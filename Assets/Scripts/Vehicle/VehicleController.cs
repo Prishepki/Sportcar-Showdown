@@ -1,4 +1,6 @@
+using MonoWaves.QoL;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class VehicleController : MonoBehaviour
 {
@@ -21,12 +23,14 @@ public class VehicleController : MonoBehaviour
         foreach (Transform child in transform)
         {
             int index = -1;
-            bool isDriving = false;
+            WheelSide wheelSide = WheelSide.Right;
             bool isSteering = false;
+            bool isDriving = false;
 
-            void SetWheel(int idx, bool steering = false, bool driving = false)
+            void SetWheel(int idx, WheelSide side, bool steering = false, bool driving = false)
             {
                 index = idx;
+                wheelSide = side;
                 isSteering = steering;
                 isDriving = driving;
             }
@@ -34,27 +38,25 @@ public class VehicleController : MonoBehaviour
             switch (child.name)
             {
                 case "FL":
-                    SetWheel(0, steering: true);
+                    SetWheel(0, WheelSide.Left, steering: true);
                     break;
                 case "FR":
-                    SetWheel(1, steering: true);
+                    SetWheel(1, WheelSide.Right, steering: true);
                     break;
                 case "RL":
-                    SetWheel(2, driving: true);
+                    SetWheel(2, WheelSide.Left, driving: true);
                     break;
                 case "RR":
-                    SetWheel(3, driving: true);
+                    SetWheel(3, WheelSide.Right, driving: true);
                     break;
             }
 
             if (index == -1) continue;
 
             WheelController wheel = child.gameObject.AddComponent<WheelController>();
-            wheel.Setup(_rb, WheelModel);
+            wheel.Setup(_rb, WheelModel, wheelSide);
 
-            wheel.Settings = WheelSettings.Clone();
-            wheel.Settings.isDriving = isDriving;
-            wheel.Settings.isSteering = isSteering;
+            wheel.Initialize(new WheelInitializer(WheelSettings, isSteering, isDriving));
 
             _wheels[index] = wheel;
         }
@@ -64,6 +66,11 @@ public class VehicleController : MonoBehaviour
     {
         _inputSteering = Input.GetAxisRaw(MonoWaves.QoL.Const.HORIZONTAL);
         _inputThrottle = Input.GetAxisRaw(MonoWaves.QoL.Const.VERTICAL);
+
+        if (Keyboard.IsPressed(KeyCode.R))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
     }
 
     private void FixedUpdate()
