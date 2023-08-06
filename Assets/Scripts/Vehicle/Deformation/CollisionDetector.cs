@@ -7,42 +7,28 @@ using UnityEngine.Events;
 public class CollisionDetector : MonoBehaviour
 {
     [SerializeField] private GameObject _debugObject;
-    [SerializeField] private Rigidbody _rb;
 
     private readonly List<Vector3> _collisionPoints = new();
 
-    private float _mps;
-
-    public UnityEvent<Vector3, Vector3, float> OnCollisionDetected { get; set; } = new UnityEvent<Vector3, Vector3, float>();
-
-    private void OnValidate()
-    {
-        TryGetComponent(out _rb);
-    }
-
-    private void LateUpdate()
-    {
-        _mps = _rb.velocity.magnitude;
-    }
+    public UnityEvent<Vector3, Vector3, Vector3> OnCollisionDetected { get; set; } = new UnityEvent<Vector3, Vector3, Vector3>();
 
     private void OnCollisionStay(Collision other)
     {
-        if (_debugObject != null)
+        if (other.relativeVelocity.magnitude == 0) return;
+
+        foreach (var contact in other.contacts)
         {
-            if (_mps == 0 && other.relativeVelocity.magnitude == 0) return;
+            Vector3 contactPointRounded = contact.point.Round(0.5f);
 
-            foreach (var contact in other.contacts)
-            {
-                Vector3 contactPointRounded = contact.point.Round(0.5f);
+            if (_collisionPoints.Contains(contactPointRounded)) break;
+            _collisionPoints.Add(contactPointRounded);
 
-                if (_collisionPoints.Contains(contactPointRounded)) break;
-                _collisionPoints.Add(contactPointRounded);
+            OnCollisionDetected.Invoke(contact.point, contact.normal, other.impulse * 0.02f + other.relativeVelocity);
 
-                GameObject debugPoint = Instantiate(_debugObject, contact.point, Quaternion.identity);
-                debugPoint.transform.SetParent(transform);
+            if (!_debugObject) return;
 
-                OnCollisionDetected.Invoke(contact.point, contact.normal, other.impulse.magnitude * 0.02f + other.relativeVelocity.magnitude);
-            }
+            GameObject debugPoint = Instantiate(_debugObject, contact.point, Quaternion.identity);
+            debugPoint.transform.SetParent(transform);
         }
     }
 }
