@@ -2,8 +2,18 @@ using UnityEngine;
 
 namespace MonoWaves.QoL
 {
-    public static class Vector
+    public static class ZMath
     {
+        public static readonly Vector3 XZ = new(1, 0, 1);
+        public static readonly Vector3 XY = new(1, 1, 0);
+        public static readonly Vector3 YZ = new(0, 1, 1);
+
+        public static readonly Vector3 mXZ = new(-1, 0, -1);
+        public static readonly Vector3 mXY = new(-1, -1, 0);
+        public static readonly Vector3 mYZ = new(0, -1, -1);
+
+        public static readonly Vector3 mXYmZ = new(-1, 1, -1);
+
         public static Vector2 RadianToVector2(float radian)
         {
             return new Vector2(Mathf.Cos(radian), Mathf.Sin(radian));
@@ -90,10 +100,12 @@ namespace MonoWaves.QoL
                 target.z / z
             );
         }
-    }
 
-    public static class MathExtensions
-    {
+        public static float KineticEnergy(this Rigidbody rb)
+        {
+            return rb.velocity.sqrMagnitude;
+        }
+
         public static float Map(this float value, float from1, float to1, float from2, float to2)
         {
             return (value - from1) / (to1 - from1) * (to2 - from2) + from2;

@@ -1,5 +1,5 @@
 {
-  "dotnet.defaultSolution": "Sportcar-Showdown.sln",
+  "dotnet.defaultSolution": "SportcarShowdown.sln",
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
   "editor.formatOnType": true,

@@ -86,7 +86,7 @@ public class VehicleController : MonoBehaviour
 
             if (wheel.Settings.isDriving)
             {
-                torque = _inputThrottle * 400;
+                torque = _inputThrottle * 600;
             }
 
             wheel.Step(torque);

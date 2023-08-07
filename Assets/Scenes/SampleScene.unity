@@ -1772,7 +1772,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132147505408601}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1889,10 +1889,11 @@ MonoBehaviour:
   _meshFilter: {fileID: 7280329626211430087}
   _meshCollider: {fileID: 7280329626211430088}
   _deformForceMultiplier: 0.5
-  _deformRadius: 0.5
-  _impactDivider: {x: 4.5, y: 200, z: 4.5}
-  _impactClamper: {x: 5.25, y: 2.5, z: 5.25}
-  _doLog: 0
+  _deformRadius: 0.65
+  _impactMultiplier: 0.02
+  _impactDivider: {x: 0.75, y: 275, z: 0.75}
+  _impactClamper: {x: 2, y: 1, z: 2}
+  _doLog: 1
 --- !u!114 &919132147505408606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1905,7 +1906,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e258e82f41565c4699f0220eae269ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _debugObject: {fileID: 0}
+  _debugObject: {fileID: 8752546161171766671, guid: f619db011db1e814a8f26b150114bcc9,
+    type: 3}
+  _doDebug: 1
 --- !u!23 &947129584271146834
 MeshRenderer:
   m_ObjectHideFlags: 0
