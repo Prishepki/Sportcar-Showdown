@@ -64,6 +64,8 @@ public class WheelController : MonoBehaviour
     {
         Acceleration(torque);
 
+        _linearVelocity = _slip = _force = Vector3.zero;
+
         if (SuspensionForce())
         {
             _linearVelocity = transform.InverseTransformDirection(_rb.GetPointVelocity(_hit.point));
@@ -81,6 +83,7 @@ public class WheelController : MonoBehaviour
         UpdateModel();
     }
 
+    // TODO: wheel friction
     private void Acceleration(float torque)
     {
         float totalTorque = torque - _force.z * Settings.wheelRadius;
