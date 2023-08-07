@@ -10,6 +10,7 @@ public enum VehicleDriveTrain
     Front, Rear, All,
 };
 
+[RequireComponent(typeof(Rigidbody))]
 public class VehicleController : MonoBehaviour
 {
     private Rigidbody _rb;
@@ -18,16 +19,28 @@ public class VehicleController : MonoBehaviour
     private float _inputSteering;
     private float _inputThrottle;
 
+    [Header("Properties")]
+    [SerializeField] private float _mass = 1488;
+
     public GameObject WheelModel;
     public WheelSettings WheelSettings;
     public VehicleDriveTrain DriveTrain;
 
     public float MaxSteering = 35f;
 
+
+    private void OnValidate()
+    {
+        if (TryGetComponent(out _rb))
+        {
+            _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            _rb.interpolation = RigidbodyInterpolation.Interpolate;
+            _rb.mass = _mass;
+        }
+    }
+
     private void Start()
     {
-        _rb = GetComponent<Rigidbody>();
-
         // мрак
         foreach (Transform child in transform)
         {

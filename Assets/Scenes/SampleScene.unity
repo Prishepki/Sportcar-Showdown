@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571322, b: 0.30692178, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028337, g: 0.22571322, b: 0.30692178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1032,7 +1032,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &810711949
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1045,6 +1045,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cbf2aa8cbc7afa42994ab9b5052aa94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _mass: 1488
   WheelModel: {fileID: 2431549757868405867, guid: ce5f15242b5796e478714c6d403b78eb,
     type: 3}
   WheelSettings:
@@ -1085,9 +1086,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!4 &810711951
 Transform:
   m_ObjectHideFlags: 0
@@ -2372,7 +2373,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &919132147505408602
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2385,6 +2386,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cbf2aa8cbc7afa42994ab9b5052aa94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _mass: 1488
   WheelModel: {fileID: 2431549757868405867, guid: ce5f15242b5796e478714c6d403b78eb,
     type: 3}
   WheelSettings:
@@ -2425,9 +2427,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!114 &919132147505408604
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2456,11 +2458,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _meshFilter: {fileID: 7280329626211430087}
   _meshCollider: {fileID: 7280329626211430088}
-  _deformForceMultiplier: 0.5
+  _impactMultiplier: 0.1
   _deformRadius: 0.65
-  _impactMultiplier: 0.02
-  _impactDivider: {x: 0.75, y: 275, z: 0.75}
-  _impactClamper: {x: 1, y: 0.5, z: 1}
+  _impactDivider: {x: 2, y: 350, z: 2}
+  _impactClamper: {x: 1.25, y: 0.5, z: 1.25}
   _doLog: 0
 --- !u!114 &919132147505408606
 MonoBehaviour:
@@ -2477,6 +2478,7 @@ MonoBehaviour:
   _debugObject: {fileID: 8752546161171766671, guid: f619db011db1e814a8f26b150114bcc9,
     type: 3}
   _detectionQuality: 3
+  _impactTreshold: 5
   _doDebug: 0
 --- !u!23 &947129584271146834
 MeshRenderer:
