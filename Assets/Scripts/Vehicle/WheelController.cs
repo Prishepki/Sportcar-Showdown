@@ -43,7 +43,7 @@ public class WheelController : MonoBehaviour
 
     private Vector3 _suspensionForce;
 
-    private float angularVelocity;
+    public float AngularVelocity { get; private set; }
     private Vector3 _linearVelocity;
 
     private Vector3 _slip;
@@ -76,11 +76,12 @@ public class WheelController : MonoBehaviour
             TireForce();
 
             Debug.DrawRay(transform.position, _slip.x * transform.right, Color.red);
-            Debug.DrawRay(transform.position, _force.y * transform.up / 1000, Color.green);
+            Debug.DrawRay(transform.position, _force.y * transform.up / 10000, Color.green);
             Debug.DrawRay(transform.position, _slip.z * transform.forward, Color.blue);
         }
 
-        UpdateModel();
+        _model.localPosition = new(0, -_springLength, 0);
+        _model.Rotate(AngularVelocity * Mathf.Rad2Deg * Time.fixedDeltaTime, 0, 0);
     }
 
     // TODO: wheel friction
@@ -89,9 +90,10 @@ public class WheelController : MonoBehaviour
         float totalTorque = torque - _force.z * Settings.wheelRadius;
         float angularAcceleration = totalTorque / Settings.wheelInertia;
 
-        angularVelocity += angularAcceleration * Time.fixedDeltaTime;
+        AngularVelocity += angularAcceleration * Time.fixedDeltaTime;
     }
 
+    // TODO: apply force at hit.point or transform.position
     private bool SuspensionForce()
     {
         if (Physics.Raycast(transform.position, -transform.up, out _hit, Settings.springRestLength + Settings.springTravel + Settings.wheelRadius))
@@ -123,7 +125,7 @@ public class WheelController : MonoBehaviour
     private void SlipZ()
     {
         float targetAngularVelocity = _linearVelocity.z / Settings.wheelRadius;
-        float targetAngularAcceleration = (angularVelocity - targetAngularVelocity) / Time.fixedDeltaTime;
+        float targetAngularAcceleration = (AngularVelocity - targetAngularVelocity) / Time.fixedDeltaTime;
         float targetFrictionTorque = targetAngularAcceleration * Settings.wheelInertia;
         float maxFrictionTorque = _force.y * Settings.wheelRadius;
 
@@ -168,11 +170,5 @@ public class WheelController : MonoBehaviour
             Vector3.ProjectOnPlane(transform.forward, _hit.normal).normalized * _force.z;
 
         _rb.AddForceAtPosition(force, _hit.point);
-    }
-
-    private void UpdateModel()
-    {
-        _model.localPosition = new(0, -_springLength, 0);
-        _model.Rotate(angularVelocity * Mathf.Rad2Deg * Time.fixedDeltaTime, 0, 0);
     }
 }
