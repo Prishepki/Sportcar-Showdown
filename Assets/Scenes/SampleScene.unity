@@ -1908,6 +1908,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _debugObject: {fileID: 8752546161171766671, guid: f619db011db1e814a8f26b150114bcc9,
     type: 3}
+  _detectionQuality: 3
   _doDebug: 1
 --- !u!23 &947129584271146834
 MeshRenderer:
