@@ -19,24 +19,11 @@ public class WheelSettings
 
     [ReadOnly] public bool isDriving = false;
     [ReadOnly] public bool isSteering = false;
+    [ReadOnly] public bool isLeft = false;
 
     public WheelSettings Clone()
     {
         return (WheelSettings)MemberwiseClone();
-    }
-}
-
-public struct WheelInitializer
-{
-    public WheelSettings Settings;
-    public bool IsSteering;
-    public bool IsDriving;
-
-    public WheelInitializer(WheelSettings settings, bool isSteering, bool isDriving)
-    {
-        Settings = settings;
-        IsSteering = isSteering;
-        IsDriving = isDriving;
     }
 }
 
@@ -65,24 +52,12 @@ public class WheelController : MonoBehaviour
 
     private Vector3 _force;
 
-    public void Setup(Rigidbody rb, GameObject model, WheelSide side)
+    public void Setup(Rigidbody rb, GameObject model)
     {
         _rb = rb;
 
         _model = Instantiate(model, transform).transform;
-        _model.localScale = new Vector3
-        (
-            x: side == WheelSide.Left ? -1 : 1,
-            y: 1,
-            z: 1
-        );
-    }
-
-    public void Initialize(WheelInitializer initializer)
-    {
-        Settings = initializer.Settings.Clone();
-        Settings.isDriving = initializer.IsDriving;
-        Settings.isSteering = initializer.IsSteering;
+        _model.localScale = new(Settings.isLeft ? -1 : 1, 1, 1);
     }
 
     public void Step(float torque)
@@ -97,6 +72,10 @@ public class WheelController : MonoBehaviour
             SlipX();
 
             TireForce();
+
+            Debug.DrawRay(transform.position, _slip.x * transform.right, Color.red);
+            Debug.DrawRay(transform.position, _force.y * transform.up / 1000, Color.green);
+            Debug.DrawRay(transform.position, _slip.z * transform.forward, Color.blue);
         }
 
         UpdateModel();
@@ -125,6 +104,10 @@ public class WheelController : MonoBehaviour
             _suspensionForce = _force.y * _hit.normal.normalized;
 
             _rb.AddForceAtPosition(_suspensionForce, transform.position);
+
+            Vector3 start = transform.position - transform.up * (_springLength);
+
+            Debug.DrawRay(start, -transform.up * Settings.wheelRadius, Color.magenta);
             return true;
         }
         else
@@ -135,6 +118,19 @@ public class WheelController : MonoBehaviour
     }
 
     private void SlipZ()
+    {
+        float targetAngularVelocity = _linearVelocity.z / Settings.wheelRadius;
+        float targetAngularAcceleration = (angularVelocity - targetAngularVelocity) / Time.fixedDeltaTime;
+        float targetFrictionTorque = targetAngularAcceleration * Settings.wheelInertia;
+        float maxFrictionTorque = _force.y * Settings.wheelRadius;
+
+        if (_force.y == 0)
+            _slip.z = 0;
+        else
+            _slip.z = Mathf.Clamp(targetFrictionTorque / maxFrictionTorque, -1, 1); // TODO: remove clamp
+    }
+
+    private void SlipX()
     {
         if (_linearVelocity.z != 0)
         {
@@ -159,19 +155,6 @@ public class WheelController : MonoBehaviour
         _slip.x = Mathf.Clamp(_slipAngleDynamic / Settings.slipAnglePeak, -1, 1); // TODO: remove clamp
     }
 
-    private void SlipX()
-    {
-        float targetAngularVelocity = _linearVelocity.z / Settings.wheelRadius;
-        float targetAngularAcceleration = (angularVelocity - targetAngularVelocity) / Time.fixedDeltaTime;
-        float targetFrictionTorque = targetAngularAcceleration * Settings.wheelInertia;
-        float maxFrictionTorque = _force.y * Settings.wheelRadius;
-
-        if (_force.y == 0)
-            _slip.z = 0;
-        else
-            _slip.z = Mathf.Clamp(targetFrictionTorque / maxFrictionTorque, -1, 1); // TODO: remove clamp
-    }
-
     private void TireForce()
     {
         _force.x = Mathf.Max(_force.y, 0) * _slip.x;
@@ -189,10 +172,4 @@ public class WheelController : MonoBehaviour
         _model.localPosition = new(0, -_springLength, 0);
         _model.Rotate(angularVelocity * Mathf.Rad2Deg * Time.fixedDeltaTime, 0, 0);
     }
-}
-
-public enum WheelSide
-{
-    Left,
-    Right
 }

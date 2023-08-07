@@ -1,17 +1,26 @@
+using System;
+using System.Collections.Generic;
 using MonoWaves.QoL;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[Serializable]
+public enum VehicleDriveTrain
+{
+    Front, Rear, All,
+};
+
 public class VehicleController : MonoBehaviour
 {
     private Rigidbody _rb;
-    private readonly WheelController[] _wheels = new WheelController[4];
+    private List<WheelController> _wheels = new List<WheelController>();
 
     private float _inputSteering;
     private float _inputThrottle;
 
     public GameObject WheelModel;
     public WheelSettings WheelSettings;
+    public VehicleDriveTrain DriveTrain;
 
     public float MaxSteering = 35f;
 
@@ -22,43 +31,31 @@ public class VehicleController : MonoBehaviour
         // мрак
         foreach (Transform child in transform)
         {
-            int index = -1;
-            WheelSide wheelSide = WheelSide.Right;
-            bool isSteering = false;
-            bool isDriving = false;
+            if (child.name.Length != 2) continue;
 
-            void SetWheel(int idx, WheelSide side, bool steering = false, bool driving = false)
-            {
-                index = idx;
-                wheelSide = side;
-                isSteering = steering;
-                isDriving = driving;
-            }
+            char wheelDriveTrain = child.name[0]; // Front, Rear
+            char wheelSide = child.name[1]; // Left, Right
 
-            switch (child.name)
-            {
-                case "FL":
-                    SetWheel(0, WheelSide.Left, steering: true);
-                    break;
-                case "FR":
-                    SetWheel(1, WheelSide.Right, steering: true);
-                    break;
-                case "RL":
-                    SetWheel(2, WheelSide.Left, driving: true);
-                    break;
-                case "RR":
-                    SetWheel(3, WheelSide.Right, driving: true);
-                    break;
-            }
+            if (wheelDriveTrain != 'F' && wheelDriveTrain != 'R') continue;
+            if (wheelSide != 'L' && wheelSide != 'R') continue;
 
-            if (index == -1) continue;
+            WheelSettings settings = WheelSettings.Clone();
+
+            if (DriveTrain == VehicleDriveTrain.All)
+                settings.isDriving = true;
+            else if (DriveTrain == VehicleDriveTrain.Front && wheelDriveTrain == 'F')
+                settings.isDriving = true;
+            else if (DriveTrain == VehicleDriveTrain.Rear && wheelDriveTrain == 'R')
+                settings.isDriving = true;
+
+            settings.isSteering = wheelDriveTrain == 'F';
+            settings.isLeft = wheelSide == 'L';
 
             WheelController wheel = child.gameObject.AddComponent<WheelController>();
-            wheel.Setup(_rb, WheelModel, wheelSide);
+            wheel.Settings = settings;
+            wheel.Setup(_rb, WheelModel);
 
-            wheel.Initialize(new WheelInitializer(WheelSettings, isSteering, isDriving));
-
-            _wheels[index] = wheel;
+            _wheels.Add(wheel);
         }
     }
 
