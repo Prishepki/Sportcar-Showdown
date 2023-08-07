@@ -4,7 +4,7 @@ namespace MonoWaves.QoL
 {
     public static class ZPhysics
     {
-        public static float KineticEnergy(this Rigidbody rb) => rb.velocity.sqrMagnitude;
+        public static float KineticEnergy(this Rigidbody rb) => rb.velocity.sqrMagnitude / (rb.mass * 0.25f);
     }
 
     public static class ZMath

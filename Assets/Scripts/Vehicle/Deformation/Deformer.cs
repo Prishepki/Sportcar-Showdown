@@ -9,9 +9,8 @@ public class Deformer : MonoBehaviour
     [SerializeField, Tooltip("Оставьте пустое поле, если не надо менять коллайдер")] private MeshCollider _meshCollider;
 
     [Header("Properties")]
-    [SerializeField] private float _deformForceMultiplier = 0.25f;
-    [SerializeField] private float _deformRadius = 0.5f;
-    [SerializeField] private float _impactMultiplier = 0.05f;
+    [SerializeField] private float _impactMultiplier = 0.25f;
+    [SerializeField] private float _deformRadius = 0.65f;
     [SerializeField] private Vector3 _impactDivider;
     [SerializeField] private Vector3 _impactClamper;
 
@@ -23,19 +22,19 @@ public class Deformer : MonoBehaviour
 
     public void Deform(Vector3 point, Vector3 impact)
     {
-        var clampedImpact = (impact * _impactMultiplier).Divide(_impactDivider).Clamp(-_impactClamper, _impactClamper);
-        if (_doLog) Debug.Log($"Deform attempt at {point} | {impact} | {clampedImpact}");
+        Vector3 localPoint = transform.InverseTransformPoint(point);
+        Vector3 impactRecalculated = _impactMultiplier * impact.Divide(_impactDivider).Clamp(-_impactClamper, _impactClamper);
 
-        if (clampedImpact.Equals(0, 0, 0)) return;
-
-        for (int idx = 0; idx < _modifiedVerts.Length; idx++)
+        for (int vertex = 0; vertex < _modifiedVerts.Length; vertex++)
         {
-            var distance = Vector3.Distance(point, transform.position + _modifiedVerts[idx]);
-            var force = _deformForceMultiplier * (1 - Mathf.Clamp(distance, 0, _deformRadius) / _deformRadius) * clampedImpact;
+            float distanceToPoint = Vector3.Distance(_modifiedVerts[vertex], localPoint);
 
-            if (force.magnitude > 0)
+            if (distanceToPoint < _deformRadius)
             {
-                _modifiedVerts[idx] += force;
+                float distanceFalloff = 1 - Mathf.Clamp(distanceToPoint, 0, _deformRadius) / _deformRadius;
+
+                Vector3 deformForce = distanceFalloff * impactRecalculated;
+                _modifiedVerts[vertex] += deformForce;
             }
         }
 

@@ -9,14 +9,13 @@ public class CollisionDetector : MonoBehaviour
     [SerializeField] private GameObject _debugObject;
 
     [Header("Properties")]
-    [SerializeField] private float _detectionQuality = 3;
+    [SerializeField] private float _detectionQuality = 2.5f;
+    [SerializeField] private float _impactTreshold = 5f;
 
     [Header("Debug")]
     [SerializeField] private bool _doDebug;
 
-    private Vector3 _lastRecordedSpeed;
     private Rigidbody _rb;
-
     private readonly List<Vector3> _collisionPoints = new();
 
     public UnityEvent<Vector3, Vector3> OnCollisionDetected { get; set; } = new UnityEvent<Vector3, Vector3>();
@@ -26,28 +25,34 @@ public class CollisionDetector : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
     }
 
-    private void LateUpdate()
+    private void OnCollisionEnter(Collision other)
     {
-        _lastRecordedSpeed = _rb.velocity.Multiply(ZMath.XZ).ClampMinimum(Vector3.one);
-    }
+        float collisionEnergy = other.rigidbody ? _rb.KineticEnergy() + other.rigidbody.KineticEnergy() : _rb.KineticEnergy();
 
-    private void OnCollisionStay(Collision other)
-    {
-        if (other.relativeVelocity.Equals(0, 0, 0)) return;
+        if (other.impulse.magnitude + collisionEnergy < _impactTreshold) return;
 
         foreach (var contact in other.contacts)
         {
             Vector3 contactPointRounded = contact.point.Round(1 / _detectionQuality);
 
-            if (_collisionPoints.Contains(contactPointRounded)) break;
-            _collisionPoints.Add(contactPointRounded);
+            if (!_collisionPoints.Contains(contactPointRounded))
+            {
+                _collisionPoints.Add(contactPointRounded);
 
-            OnCollisionDetected.Invoke(contact.point, (_rb.KineticEnergy() + other.relativeVelocity.magnitude) * _lastRecordedSpeed.Multiply(contact.normal));
+                float impactPerContact = contact.impulse.magnitude + collisionEnergy;
+                Vector3 impactVector = contact.normal * impactPerContact;
 
-            if (!_doDebug) return;
-
-            GameObject debugPoint = Instantiate(_debugObject, contact.point, Quaternion.identity);
-            debugPoint.transform.SetParent(transform);
+                if (_doDebug) DoDebug(contact.point, impactVector);
+                OnCollisionDetected.Invoke(contact.point, impactVector);
+            }
         }
+    }
+
+    private void DoDebug(Vector3 point, Vector3 impact)
+    {
+        Debug.Log($"Invoking OnCollisionDetected at {point} with {impact}");
+
+        GameObject debugPoint = Instantiate(_debugObject, point, Quaternion.identity);
+        debugPoint.transform.SetParent(transform);
     }
 }
