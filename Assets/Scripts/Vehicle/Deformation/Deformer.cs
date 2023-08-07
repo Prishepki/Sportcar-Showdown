@@ -26,7 +26,7 @@ public class Deformer : MonoBehaviour
         var clampedImpact = (impact * _impactMultiplier).Divide(_impactDivider).Clamp(-_impactClamper, _impactClamper);
         if (_doLog) Debug.Log($"Deform attempt at {point} | {impact} | {clampedImpact}");
 
-        if (clampedImpact.magnitude == 0) return;
+        if (clampedImpact.Equals(0, 0, 0)) return;
 
         for (int idx = 0; idx < _modifiedVerts.Length; idx++)
         {

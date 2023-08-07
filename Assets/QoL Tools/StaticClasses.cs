@@ -2,6 +2,11 @@ using UnityEngine;
 
 namespace MonoWaves.QoL
 {
+    public static class ZPhysics
+    {
+        public static float KineticEnergy(this Rigidbody rb) => rb.velocity.sqrMagnitude;
+    }
+
     public static class ZMath
     {
         public static readonly Vector3 XZ = new(1, 0, 1);
@@ -48,6 +53,45 @@ namespace MonoWaves.QoL
                 Mathf.Clamp(target.x, min.x, max.x),
                 Mathf.Clamp(target.y, min.y, max.y),
                 Mathf.Clamp(target.z, min.z, max.z)
+            );
+        }
+
+        public static Vector3 ClampMinimum(this Vector3 target, Vector3 min)
+        {
+            return new Vector3
+            (
+                target.x < min.x ? min.x : target.x,
+                target.y < min.y ? min.y : target.y,
+                target.z < min.z ? min.z : target.z
+            );
+        }
+
+        public static Vector3 ClampMinimum(this Vector3 target, float x, float y, float z)
+        {
+            return new Vector3
+            (
+                target.x < x ? x : target.x,
+                target.y < y ? y : target.y,
+                target.z < z ? z : target.z
+            );
+        }
+        public static Vector3 ClampMaximum(this Vector3 target, Vector3 max)
+        {
+            return new Vector3
+            (
+                target.x > max.x ? max.x : target.x,
+                target.y > max.y ? max.y : target.y,
+                target.z > max.z ? max.z : target.z
+            );
+        }
+
+        public static Vector3 ClampMaximum(this Vector3 target, float x, float y, float z)
+        {
+            return new Vector3
+            (
+                target.x > x ? x : target.x,
+                target.y > y ? y : target.y,
+                target.z > z ? z : target.z
             );
         }
 
@@ -101,9 +145,9 @@ namespace MonoWaves.QoL
             );
         }
 
-        public static float KineticEnergy(this Rigidbody rb)
+        public static bool Equals(this Vector3 target, float x, float y, float z)
         {
-            return rb.velocity.sqrMagnitude;
+            return target.x == x && target.y == y && target.z == z;
         }
 
         public static float Map(this float value, float from1, float to1, float from2, float to2)

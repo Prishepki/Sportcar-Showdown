@@ -8,6 +8,9 @@ public class CollisionDetector : MonoBehaviour
 {
     [SerializeField] private GameObject _debugObject;
 
+    [Header("Properties")]
+    [SerializeField] private float _detectionQuality = 3;
+
     [Header("Debug")]
     [SerializeField] private bool _doDebug;
 
@@ -25,21 +28,21 @@ public class CollisionDetector : MonoBehaviour
 
     private void LateUpdate()
     {
-        _lastRecordedSpeed = _rb.velocity.Multiply(ZMath.XZ);
+        _lastRecordedSpeed = _rb.velocity.Multiply(ZMath.XZ).ClampMinimum(Vector3.one);
     }
 
     private void OnCollisionStay(Collision other)
     {
-        if (other.relativeVelocity.magnitude == 0) return;
+        if (other.relativeVelocity.Equals(0, 0, 0)) return;
 
         foreach (var contact in other.contacts)
         {
-            Vector3 contactPointRounded = contact.point.Round(0.5f);
+            Vector3 contactPointRounded = contact.point.Round(1 / _detectionQuality);
 
             if (_collisionPoints.Contains(contactPointRounded)) break;
             _collisionPoints.Add(contactPointRounded);
 
-            OnCollisionDetected.Invoke(contact.point, (_rb.KineticEnergy() + other.relativeVelocity.magnitude) * (contact.normal + _lastRecordedSpeed));
+            OnCollisionDetected.Invoke(contact.point, (_rb.KineticEnergy() + other.relativeVelocity.magnitude) * _lastRecordedSpeed.Multiply(contact.normal));
 
             if (!_doDebug) return;
 
