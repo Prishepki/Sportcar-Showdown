@@ -1853,7 +1853,7 @@ Rigidbody:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_ImplicitCom: 1
+  m_ImplicitCom: 0
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -1893,7 +1893,7 @@ MonoBehaviour:
   _impactMultiplier: 0.02
   _impactDivider: {x: 0.75, y: 275, z: 0.75}
   _impactClamper: {x: 1, y: 0.5, z: 1}
-  _doLog: 1
+  _doLog: 0
 --- !u!114 &919132147505408606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1909,7 +1909,7 @@ MonoBehaviour:
   _debugObject: {fileID: 8752546161171766671, guid: f619db011db1e814a8f26b150114bcc9,
     type: 3}
   _detectionQuality: 3
-  _doDebug: 1
+  _doDebug: 0
 --- !u!23 &947129584271146834
 MeshRenderer:
   m_ObjectHideFlags: 0
