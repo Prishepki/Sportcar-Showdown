@@ -13,7 +13,7 @@ public enum VehicleDriveTrain
 public class VehicleController : MonoBehaviour
 {
     private Rigidbody _rb;
-    private List<WheelController> _wheels = new List<WheelController>();
+    private readonly List<WheelController> _wheels = new();
 
     private float _inputSteering;
     private float _inputThrottle;
